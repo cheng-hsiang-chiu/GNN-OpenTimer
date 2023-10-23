@@ -1,6 +1,7 @@
 import re
 import sys
 import os
+import threading
 
 # circuit with sdc : c17, c1355, ac97_ctrl, aes_core, c17_slack, c1908, c2670, c3540, c3_slack, c432, c499, c5315, c6288, c7552
 #                    c7552_slack, c880, des_perf, s1196, s1494, s27, s27_spef, s344, s349, s386, s400, s510, s526, vga_lcd, 
@@ -158,8 +159,22 @@ if __name__ == "__main__":
 
   process_file_v(sys.argv[1], sys.argv[2], file1_lines, file2_lines, output_v_path)
 
-  process_file_spef(sys.argv[1]+'.spef', sys.argv[2]+'.spef', output_spef_path)
+  t1 = threading.Thread(target=process_file_spef, args=(sys.argv[1]+'.spef', sys.argv[2]+'.spef', output_spef_path))
+  t2 = threading.Thread(target=process_file_sdc, args=(sys.argv[1]+'.sdc', sys.argv[2]+'.sdc', output_sdc_path))
+ 
+  # starting thread 1
+  t1.start()
+  # starting thread 2
+  t2.start()
+ 
+  # wait until thread 1 is completely executed
+  t1.join()
+  # wait until thread 2 is completely executed
+  t2.join()
+
+
+  #process_file_spef(sys.argv[1]+'.spef', sys.argv[2]+'.spef', output_spef_path)
   
-  process_file_sdc(sys.argv[1]+'.sdc', sys.argv[2]+'.sdc', output_sdc_path)
+  #process_file_sdc(sys.argv[1]+'.sdc', sys.argv[2]+'.sdc', output_sdc_path)
 
 
