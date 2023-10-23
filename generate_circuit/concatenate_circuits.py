@@ -107,20 +107,22 @@ def process_file_spef(file1_path, file2_path, output_file_path):
   with open(file1_path, "r") as f:
     with open(output_file_path, "a") as fout:
       lines = f.readlines()
+      pattern = r'\b(' + '|'.join(file1_set) + r')\b'
       for line in lines:
-        line = re.subn(r'\b(' + '|'.join(file1_set) + r')\b', r'A_\1', line)
+        line = re.subn(pattern, r'A_\1', line)
         fout.write(line[0])
 
   first_new_line = True
   with open(file2_path, "r") as f:
     with open(output_file_path, "a") as fout:
       lines = f.readlines()
+      pattern = r'\b(' + '|'.join(file2_set) + r')\b'
       if first_new_line == True:
         if line == '\n':
           first_new_line = False
       else:
         for line in lines:
-          line = re.subn(r'\b(' + '|'.join(file2_set) + r')\b', r'B_\1', line)
+          line = re.subn(pattern, r'B_\1', line)
           fout.write(line[0])
 
 def process_file_sdc(file1_path, file2_path, output_file_path):
