@@ -105,25 +105,36 @@ def process_file_v(file1, file2, file1_lines, file2_lines, output_file_path):
 
 def process_file_spef(file1_path, file2_path, output_file_path):
   with open(file1_path, "r") as f:
-    with open(output_file_path, "a") as fout:
-      lines = f.readlines()
-      pattern = r'\b(' + '|'.join(file1_set) + r')\b'
-      for line in lines:
-        line = re.subn(pattern, r'A_\1', line)
-        fout.write(line[0])
+    lines = f.readlines()
+    pattern = r'\b(' + '|'.join(file1_set) + r')\b'
+    idx = 0
+    for line in lines:
+      lines[idx] = re.subn(pattern, r'A_\1', line)[0]
+      idx = idx + 1
+  with open(output_file_path, "a") as fout:
+    for line in lines:
+      fout.write(line)
 
   first_new_line = True
   with open(file2_path, "r") as f:
-    with open(output_file_path, "a") as fout:
-      lines = f.readlines()
-      pattern = r'\b(' + '|'.join(file2_set) + r')\b'
+    lines = f.readlines()
+    pattern = r'\b(' + '|'.join(file2_set) + r')\b'
+    idx = 0
+    start = 0
+    for line in lines:
+      #print(first_new_line)
       if first_new_line == True:
         if line == '\n':
           first_new_line = False
+        start = start + 1
       else:
-        for line in lines:
-          line = re.subn(pattern, r'B_\1', line)
-          fout.write(line[0])
+        lines[idx] = re.subn(pattern, r'B_\1', line)[0]
+      idx = idx + 1
+
+  with open(output_file_path, "a") as fout:
+    for line in lines[start:]:
+      fout.write(line)
+
 
 def process_file_sdc(file1_path, file2_path, output_file_path):
   with open(file1_path, "r") as f:
